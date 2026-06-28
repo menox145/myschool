@@ -192,18 +192,22 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">NIS *</label>
-                                <input type="text" name="nis" value="{{ old('nis') }}"
+                                <input type="text" inputmode="numeric" pattern="[0-9]*" name="nis"
+                                    value="{{ old('nis') }}"
                                     class="w-full px-3 py-2 border rounded-lg text-sm @error('nis') border-red-500 @enderror"
-                                    required>
+                                    required maxlength="25" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                 @error('nis')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">NISN *</label>
-                                <input type="text" name="nisn" value="{{ old('nisn') }}"
+                                <input type="text" inputmode="numeric" pattern="[0-9]*" name="nisn"
+                                    value="{{ old('nisn') }}"
                                     class="w-full px-3 py-2 border rounded-lg text-sm @error('nisn') border-red-500 @enderror"
-                                    required placeholder="Dari sekolah asal">
+                                    required maxlength="25" minlength="10"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 25)"
+                                    placeholder="25 digit angka">
                                 @error('nisn')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror

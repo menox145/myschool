@@ -55,13 +55,13 @@ class DashboardController extends Controller
     public function storeSiswa(Request $request)
     {
         $data = $request->validate([
-            'nis' => 'required|string|max:20|unique:siswas,nis',
-            'nisn' => 'required|string|max:20|unique:siswas,nisn', // WAJIB
-            'nama' => 'required|string|max:100', // Nama boleh sama
-            'jenis_kelamin' => 'required|in:L,P', // WAJIB
-            'kelas_id' => 'required|exists:kelas,id', // WAJIB
-            'status' => 'required|in:Aktif,Lulus,Pindah,Drop Out', // WAJIB
-            'tgl_lahir' => 'required|date', // WAJIB
+            'nis' => 'required|numeric|digits_between:1,25|unique:siswas,nis',
+            'nisn' => 'required|numeric|digits:25|unique:siswas,nisn',
+            'nama' => 'required|string|max:100',
+            'jenis_kelamin' => 'required|in:L,P',
+            'kelas_id' => 'required|exists:kelas,id',
+            'status' => 'required|in:Aktif,Lulus,Pindah,Drop Out',
+            'tgl_lahir' => 'required|date',
             'alamat' => 'nullable|string',
             'no_hp' => 'nullable|string|max:15',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -73,6 +73,21 @@ class DashboardController extends Controller
             'penghasilan_ibu' => 'nullable|integer|min:0',
             'anak_ke' => 'nullable|integer|min:1',
             'tahun_masuk' => 'nullable|digits:4|integer|min:2000|max:' . date('Y'),
+        ], [
+            'nis.required' => 'NIS wajib diisi',
+            'nis.numeric' => 'NIS harus angka',
+            'nis.unique' => 'NIS sudah terdaftar',
+            'nis.digits_between' => 'NIS maksimal 15 digit',
+            'nisn.required' => 'NISN wajib diisi',
+            'nisn.numeric' => 'NISN harus angka',
+            'nisn.digits' => 'NISN harus 10 digit',
+            'nisn.unique' => 'NISN sudah terdaftar',
+            'nama.required' => 'Nama wajib diisi',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih',
+            'kelas_id.required' => 'Kelas wajib dipilih',
+            'status.required' => 'Status wajib dipilih',
+            'tgl_lahir.required' => 'Tanggal lahir wajib diisi',
+            'tgl_lahir.date' => 'Format tanggal lahir tidak valid',
         ]);
 
         $data['user_id'] = Auth::id();
@@ -88,10 +103,11 @@ class DashboardController extends Controller
     public function updateSiswa(Request $request, Siswa $siswa)
     {
         $data = $request->validate([
-            'nis' => 'required|string|max:20|unique:siswas,nis,' . $siswa->id,
+            'nis' => 'required|numeric|digits_between:1,25|unique:siswas,nis,' . $siswa->id,
+            'nisn' => 'required|numeric|digits:25|unique:siswas,nisn,' . $siswa->id,
             'nama' => 'required|string|max:100',
             'jenis_kelamin' => 'required|in:L,P',
-            'tgl_lahir' => 'nullable|date',
+            'tgl_lahir' => 'required|date',
             'alamat' => 'nullable|string',
             'no_hp' => 'nullable|string|max:15',
             'kelas_id' => 'required|exists:kelas,id',
@@ -105,10 +121,24 @@ class DashboardController extends Controller
             'anak_ke' => 'nullable|integer|min:1',
             'tahun_masuk' => 'nullable|digits:4|integer|min:2000|max:' . date('Y'),
             'status' => 'required|in:Aktif,Lulus,Pindah,Drop Out',
+        ], [
+            'nis.required' => 'NIS wajib diisi',
+            'nis.numeric' => 'NIS harus angka',
+            'nis.unique' => 'NIS sudah dipakai siswa lain',
+            'nis.digits_between' => 'NIS maksimal 15 digit',
+            'nisn.required' => 'NISN wajib diisi',
+            'nisn.numeric' => 'NISN harus angka',
+            'nisn.digits' => 'NISN harus 10 digit',
+            'nisn.unique' => 'NISN sudah dipakai siswa lain',
+            'nama.required' => 'Nama wajib diisi',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih',
+            'kelas_id.required' => 'Kelas wajib dipilih',
+            'status.required' => 'Status wajib dipilih',
+            'tgl_lahir.required' => 'Tanggal lahir wajib diisi',
+            'tgl_lahir.date' => 'Format tanggal lahir tidak valid',
         ]);
 
         if ($request->hasFile('foto')) {
-            // Hapus foto lama
             if ($siswa->foto) {
                 Storage::disk('public')->delete($siswa->foto);
             }
@@ -201,7 +231,7 @@ class DashboardController extends Controller
         $request->validate([
             'nip' => 'required|string|max:20|unique:gurus,nip',
             'nama' => 'required|string|max:100',
-            'tgl_lahir' => 'nullable|date',
+            'tgl_lahir' => 'required|date',
             'no_hp' => 'nullable|string|max:15',
             'email' => 'nullable|email|max:100',
             'nik' => 'nullable|digits:16|unique:gurus,nik', // ganti ini
@@ -226,7 +256,7 @@ class DashboardController extends Controller
         $request->validate([
             'nip' => 'required|string|max:20|unique:gurus,nip,' . $id,
             'nama' => 'required|string|max:100',
-            'tgl_lahir' => 'nullable|date',
+            'tgl_lahir' => 'required|date',
             'no_hp' => 'nullable|string|max:15',
             'email' => 'nullable|email|max:100',
             'nik' => 'nullable|digits:16|unique:gurus,nik,' . $id,

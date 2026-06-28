@@ -17,5 +17,20 @@ class Guru extends Model
         'no_kk',
         'foto'
     ];
-    protected $table = 'gurus'; // pastiin ini ada dan sesuai nama tabel di database
+    protected $table = 'gurus';
+
+    public function kelas()
+    {
+        return $this->hasMany(Kelas::class, 'guru_id');
+    }
+
+    public function nilai()
+    {
+        return $this->hasMany(Nilai::class, 'guru_id');
+    }
+
+    public function kelasMapel()
+    {
+        return $this->hasMany(KelasMapel::class, 'guru_id');
+    }
 }

@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('nilai', function (Blueprint $table) {
-            $table->foreignId('kelas_mapel_id')->after('siswa_id')->constrained('kelas_mapel')->cascadeOnDelete();
             $table->dropForeign(['kelas_id']);
             $table->dropForeign(['mapel_id']);
             $table->dropColumn(['kelas_id', 'mapel_id']);

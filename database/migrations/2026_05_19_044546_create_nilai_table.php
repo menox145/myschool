@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('siswa_id')->constrained('siswas')->cascadeOnDelete();
             $table->foreignId('kelas_mapel_id')->constrained('kelas_mapel')->cascadeOnDelete();
             $table->foreignId('tahun_pelajaran_id')->constrained('tahun_pelajaran')->cascadeOnDelete();
-            $table->foreignId('guru_id')->nullable()->constrained('gurus')->nullOnDelete();
+            $table->foreignId('guru_id')->nullable()->constrained('gurus')->onDelete('set null');
             $table->integer('rph')->nullable()->default(0);
             $table->integer('pts')->nullable()->default(0);
             $table->integer('pas')->nullable()->default(0);

@@ -29,4 +29,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function kelas()
+    {
+        return $this->hasMany(Kelas::class, 'user_id');
+    }
+
+    public function nilaiHarian()
+    {
+        return $this->hasMany(NilaiHarian::class, 'user_id');
+    }
 }

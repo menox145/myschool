@@ -9,9 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('nilai_harian', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable()->constrained('users')->after('tahun_pelajaran_id');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null')->after('tahun_pelajaran_id');
             // kelas_mapel_id biar gampang dapet nama mapel tanpa join panjang
-            $table->foreignId('kelas_mapel_id')->nullable()->constrained('kelas_mapel')->after('sub_bab_mapel_id');
+            $table->foreignId('kelas_mapel_id')->nullable()->constrained('kelas_mapel')->onDelete('set null')->after('sub_bab_mapel_id');
         });
     }
 

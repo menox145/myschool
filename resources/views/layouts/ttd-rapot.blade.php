@@ -16,6 +16,6 @@
                 <u><b>{{ optional($kelas->waliKelas)->name ?? '...........................' }}</b></u><br>
                 NIP. {{ optional($kelas->waliKelas)->nip ?? '-' }}
             @endif
-        </td>
+        </td>`
     </tr>
 </table>

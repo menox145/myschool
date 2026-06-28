@@ -39,7 +39,7 @@ class NilaiImport implements ToModel, WithHeadingRow
             'pts' => $pts,
             'pas' => $pas,
             'hpa' => $hpa,
-            'pre' => $this->hitungPredikat($hpa),
+            'predikat' => $this->hitungPredikat($hpa),
         ]);
     }
 

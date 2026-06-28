@@ -41,6 +41,7 @@ class SiswaImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFai
             [
                 'jumlah_siswa' => 0,
                 'user_id' => $this->userId,
+                'guru_id' => $this->userId,
                 'nama_penambah' => $this->userName,
                 'tahun_pelajaran' => '2024/2025 - Genap' // ganti sesuai kebutuhan
             ]

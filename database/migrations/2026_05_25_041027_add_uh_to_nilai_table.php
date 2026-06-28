@@ -13,8 +13,8 @@ return new class extends Migration {
     }
     public function down(): void
     {
-        Schema::table('nilai', function (Blueprint $table) {
-            $table->dropColumn(['uh1', 'uh2', 'uh3', 'uh4', 'uh5', 'uh6', 'rata_uh']);
+        Schema::table('kelas_mapel', function (Blueprint $table) {
+            $table->dropColumn(['jumlah_uh']);
         });
     }
 };

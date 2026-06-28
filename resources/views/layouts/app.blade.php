@@ -80,7 +80,7 @@
                         Tahun Pelajaran
                     </a>
 
-                    <a href="{{ route('user.indexs') }}"
+                    <a href="{{ route('guru') }}"
                         class="sidebar-link flex items-center px-6 py-3 text-sm @if (request()->routeIs('guru')) active @endif">
                         <i class="fas fa-fw fa-chalkboard-teacher mr-3"></i>
                         Data Guru

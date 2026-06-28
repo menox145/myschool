@@ -41,4 +41,8 @@ class Nilai extends Model
     {
         return $this->belongsTo(TahunPelajaran::class, 'tahun_pelajaran_id');
     }
-}
+
+    public function guru()
+    {
+        return $this->belongsTo(Guru::class, 'guru_id');
+    }

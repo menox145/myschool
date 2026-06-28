@@ -25,10 +25,7 @@ class Kelas extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function waliKelas()
-    {
-        return $this->belongsTo(Guru::class, 'guru_id', 'id');
-    }
+
 
     public function siswa()
     {

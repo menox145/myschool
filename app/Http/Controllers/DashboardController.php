@@ -228,16 +228,28 @@ class DashboardController extends Controller
 
     public function storeGuru(Request $request)
     {
-        $request->validate([
-            'nip' => 'required|string|max:20|unique:gurus,nip',
-            'nama' => 'required|string|max:100',
-            'tgl_lahir' => 'required|date',
-            'no_hp' => 'nullable|string|max:15',
-            'email' => 'nullable|email|max:100',
-            'nik' => 'nullable|digits:16|unique:gurus,nik', // ganti ini
-            'no_kk' => 'nullable|digits:16', // ganti ini
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+        $request->validate(
+            [
+                'nip' => 'required|numeric|digits:18|unique:gurus,nip',
+                'nama' => 'required|string|max:100',
+                'tgl_lahir' => 'nullable|date',
+                'no_hp' => 'nullable|string|max:15',
+                'email' => 'nullable|email|max:100',
+                'nik' => 'nullable|numeric|digits:16|unique:gurus,nik',
+                'no_kk' => 'nullable|numeric|digits:16',
+                'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            ],
+            [
+                'nip.required' => 'NIP wajib diisi',
+                'nip.numeric' => 'NIP harus angka',
+                'nip.digits' => 'NIP harus 18 digit',
+                'nip.unique' => 'NIP sudah terdaftar',
+                'nik.numeric' => 'NIK harus angka',
+                'nik.digits' => 'NIK harus 16 digit',
+                'no_kk.numeric' => 'No KK harus angka',
+                'no_kk.digits' => 'No KK harus 16 digit',
+            ]
+        );
 
         $data = $request->except('foto');
 
@@ -252,16 +264,25 @@ class DashboardController extends Controller
     public function updateGuru(Request $request, $id)
     {
         $guru = Guru::findOrFail($id);
-
         $request->validate([
-            'nip' => 'required|string|max:20|unique:gurus,nip,' . $id,
+            'nip' => 'required|numeric|digits:18|unique:gurus,nip,' . $id,
             'nama' => 'required|string|max:100',
-            'tgl_lahir' => 'required|date',
+            'tgl_lahir' => 'nullable|date',
             'no_hp' => 'nullable|string|max:15',
             'email' => 'nullable|email|max:100',
-            'nik' => 'nullable|digits:16|unique:gurus,nik,' . $id,
-            'no_kk' => 'nullable|digits:16',
+            'nik' => 'nullable|numeric|digits:16|unique:gurus,nik,' . $id,
+            'no_kk' => 'nullable|numeric|digits:16',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ], [
+            'nip.required' => 'NIP wajib diisi',
+            'nip.numeric' => 'NIP harus angka',
+            'nip.digits' => 'NIP harus 18 digit',
+            'nip.unique' => 'NIP sudah dipakai guru lain',
+            'nik.numeric' => 'NIK harus angka',
+            'nik.digits' => 'NIK harus 16 digit',
+            'no_kk.numeric' => 'No KK harus angka',
+            'no_kk.digits' => 'No KK harus 16 digit',
+
         ]);
 
         // TAMBAHIN INI - LOGIC UPDATE

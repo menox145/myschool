@@ -46,3 +46,4 @@ class Nilai extends Model
     {
         return $this->belongsTo(Guru::class, 'guru_id');
     }
+}

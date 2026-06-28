@@ -16,7 +16,7 @@ class Kelas extends Model
     ];
     protected $table = 'kelas';
 
-    public function waliKelas()
+    public function guru()
     {
         return $this->belongsTo(Guru::class, 'guru_id', 'id');
     }

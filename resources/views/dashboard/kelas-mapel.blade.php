@@ -72,7 +72,7 @@
                                     </label>
                                     <div class="mt-2 pl-6 space-y-1">
                                         <select name="guru_id[{{ $m->id }}]"
-                                            class="w-full text-xs border rounded px-2 py-1">
+                                            class="w-full text-xs border rounded px-2 py-1 @error('guru_id.' . $m->id) border-red-500 @enderror">
                                             <option value="">-- Pilih Guru --</option>
                                             @foreach ($guru as $g)
                                                 <option value="{{ $g->id }}" @selected(optional($kelasMapel->get($m->id))->guru_id == $g->id)>
@@ -80,10 +80,17 @@
                                                 </option>
                                             @endforeach
                                         </select>
+                                        @error('guru_id.' . $m->id)
+                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                        @enderror
+
                                         <input type="number" name="jam_pelajaran[{{ $m->id }}]"
-                                            value="{{ $kelasMapel->get($m->id)->jam_pelajaran ?? 2 }}"
-                                            class="w-full text-xs border rounded px-2 py-1" placeholder="Jam"
-                                            min="1">
+                                            value="{{ $kelasMapel->get($m->id)->jam_pelajaran ?? '' }}"
+                                            class="w-full text-xs border rounded px-2 py-1 @error('jam_pelajaran.' . $m->id) border-red-500 @enderror"
+                                            placeholder="Jam" min="1">
+                                        @error('jam_pelajaran.' . $m->id)
+                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
                             @endforeach

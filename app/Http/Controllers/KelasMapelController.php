@@ -49,21 +49,38 @@ class KelasMapelController extends Controller
     {
         $request->validate([
             'kelas_id' => 'required|exists:kelas,id',
-            'mapel_ids' => 'required|array',
-            'mapel_ids.*' => 'exists:mata_pelajaran,id',
             'tahun_pelajaran_id' => 'required|exists:tahun_pelajaran,id',
+            'mapel_ids' => 'required|array|min:1',
+            'mapel_ids.*' => 'exists:mata_pelajaran,id',
         ]);
 
-        foreach ($request->mapel_ids as $mapel_id) {
-            KelasMapel::updateOrCreate([
-                'kelas_id' => $request->kelas_id,
-                'mapel_id' => $mapel_id,
-                'tahun_pelajaran_id' => $request->tahun_pelajaran_id,
+        // Validasi guru_id & jam_pelajaran cuma buat mapel yg dicentang
+        foreach ($request->mapel_ids as $mapelId) {
+            $request->validate([
+                "guru_id.{$mapelId}" => 'required|exists:gurus,id',
+                "jam_pelajaran.{$mapelId}" => 'required|integer|min:1',
             ], [
-                'guru_id' => $request->guru_id[$mapel_id] ?? null,
-                'jam_pelajaran' => $request->jam_pelajaran[$mapel_id] ?? 2,
+                "guru_id.{$mapelId}.required" => 'Guru wajib dipilih',
+                "jam_pelajaran.{$mapelId}.required" => 'Jam wajib diisi',
+                "jam_pelajaran.{$mapelId}.integer" => 'Jam harus angka',
+                "jam_pelajaran.{$mapelId}.min" => 'Jam minimal 1',
             ]);
         }
+
+        foreach ($request->mapel_ids as $mapelId) {
+            KelasMapel::updateOrCreate(
+                [
+                    'kelas_id' => $request->kelas_id,
+                    'mapel_id' => $mapelId,
+                    'tahun_pelajaran_id' => $request->tahun_pelajaran_id,
+                ],
+                [
+                    'guru_id' => $request->guru_id[$mapelId],
+                    'jam_pelajaran' => $request->jam_pelajaran[$mapelId],
+                ]
+            );
+        }
+
 
         return back()->with('success', 'Kelompok belajar berhasil disimpan!');
     }

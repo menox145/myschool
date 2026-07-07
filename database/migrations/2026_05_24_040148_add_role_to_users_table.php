@@ -7,13 +7,21 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
+        if (Schema::hasColumn('users', 'role')) {
+            return;
+        }
+
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', ['admin', 'guru', 'siswa', 'kepsek'])->default('guru')->after('email');
+            $table->enum('role', ['admin', 'user'])->default('user')->after('email');
         });
     }
 
     public function down(): void
     {
+        if (! Schema::hasColumn('users', 'role')) {
+            return;
+        }
+
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('role');
         });

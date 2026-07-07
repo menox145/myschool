@@ -35,7 +35,11 @@ class NilaiHarianController extends Controller
                 ->select('kelas_mapel.*')
                 ->get();
 
-            $siswa = Siswa::where('kelas_id', $kelasSelected)->orderBy('nama')->get();
+            $siswa = Siswa::whereHas('riwayatKelas', function ($q) use ($kelasSelected, $tahunAktif) {
+                $q->where('kelas_id', $kelasSelected)
+                    ->where('tahun_pelajaran_id', $tahunAktif->id)
+                    ->where('status', 'aktif');
+            })->orderBy('nama')->get();
 
             if (!$mapelSelected) {
                 foreach ($allMapelKelas as $km) {
@@ -172,7 +176,11 @@ class NilaiHarianController extends Controller
             ->where('tahun_pelajaran_id', $tahunAktif->id);
 
         if ($kelasId) {
-            $query->whereHas('siswa', fn($q) => $q->where('kelas_id', $kelasId));
+            $query->whereHas('siswa.riwayatKelas', function ($q) use ($kelasId, $tahunAktif) {
+                $q->where('kelas_id', $kelasId)
+                    ->where('tahun_pelajaran_id', $tahunAktif->id)
+                    ->where('status', 'aktif');
+            });
         }
 
         if ($mapelId) {
@@ -210,7 +218,7 @@ class NilaiHarianController extends Controller
                 fputcsv($file, [
                     $n->id,
                     $n->siswa->nama ?? '-',
-                    $n->siswa->kelas->nama_kelas ?? '-',
+                    $n->siswa->kelasAktif?->kelas?->nama_kelas ?? '-',
                     $n->nama_mapel ?? $n->kelasMapel->mapel->nama_mapel ?? '-',
                     $n->subBab->bab->nama_bab ?? '-', // GANTI INI: dari babMapel ke bab
                     $n->subBab->nama_sub_bab ?? '-',

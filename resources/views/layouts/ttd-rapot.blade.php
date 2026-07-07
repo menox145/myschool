@@ -10,12 +10,13 @@
             Bogor, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>
             Wali Kelas<br><br><br><br><br>
             @if (isset($siswa))
-                <u><b>{{ optional($siswa->kelas->waliKelas)->name ?? '...........................' }}</b></u><br>
-                NIP. {{ optional($siswa->kelas->waliKelas)->nip ?? '-' }}
+                @php $kelasRapot = $riwayat?->kelas ?? $siswa->kelasAktif?->kelas @endphp
+                <u><b>{{ optional($kelasRapot->waliKelas)->nama ?? '...........................' }}</b></u><br>
+                NIP. {{ optional($kelasRapot->waliKelas)->nip ?? '-' }}
             @elseif(isset($kelas))
-                <u><b>{{ optional($kelas->waliKelas)->name ?? '...........................' }}</b></u><br>
+                <u><b>{{ optional($kelas->waliKelas)->nama ?? '...........................' }}</b></u><br>
                 NIP. {{ optional($kelas->waliKelas)->nip ?? '-' }}
             @endif
-        </td>`
+        </td>
     </tr>
 </table>

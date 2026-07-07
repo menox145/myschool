@@ -14,7 +14,7 @@ class Siswa extends Model
         'tgl_lahir',
         'alamat',
         'no_hp',
-        'kelas_id',
+        // 'kelas_id', <- HAPUS INI
         'foto',
         'user_id',
         'nama_penambah',
@@ -29,9 +29,19 @@ class Siswa extends Model
         'status'
     ];
 
-    public function kelas()
+    // HAPUS SEMUA RELASI KELAS LAMA, PAKE INI AJA
+    public function riwayatKelas()
     {
-        return $this->belongsTo(Kelas::class);
+        return $this->hasMany(RiwayatKelas::class);
+    }
+
+    public function kelasAktif()
+    {
+        $tahunAktif = TahunPelajaran::where('aktif', 1)->first();
+        return $this->hasOne(RiwayatKelas::class)
+            ->where('tahun_pelajaran_id', $tahunAktif?->id)
+            ->where('status', 'aktif')
+            ->with('kelas.waliKelas');
     }
 
     public function user()

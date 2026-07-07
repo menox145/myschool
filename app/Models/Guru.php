@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-
 class Guru extends Model
 {
     protected $fillable = [
@@ -17,6 +16,7 @@ class Guru extends Model
         'no_kk',
         'foto'
     ];
+
     protected $table = 'gurus';
 
     public function kelas()

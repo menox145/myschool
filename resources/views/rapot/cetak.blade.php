@@ -194,7 +194,9 @@
                     <td style="border: none;"><b>{{ strtoupper($siswa->nama) }}</b></td>
                     <td width="130" style="border: none;">Kelas</td>
                     <td width="10" style="border: none;">:</td>
-                    <td style="border: none;"><b>{{ $siswa->kelas->nama_kelas }}</b></td>
+                    <td style="border: none;">
+                        <b>{{ $riwayat?->kelas?->nama_kelas ?? $siswa->kelasAktif?->kelas?->nama_kelas ?? '-' }}</b>
+                    </td>
                 </tr>
                 <tr>
                     <td style="border: none; padding: 2px 0;">Nomor Induk</td>
@@ -271,8 +273,9 @@
                 <td width="50%">
                     Bogor, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>
                     Wali Kelas<br><br><br><br><br>
-                    <u><b>{{ $siswa->kelas->waliKelas->name ?? '...........................' }}</b></u><br>
-                    NIP. {{ $siswa->kelas->waliKelas->nip ?? '-' }}
+                    @php $kelasRapot = $riwayat?->kelas ?? $siswa->kelasAktif?->kelas @endphp
+                    <u><b>{{ optional($kelasRapot->waliKelas)->nama ?? '...........................' }}</b></u><br>
+                    NIP. {{ optional($kelasRapot->waliKelas)->nip ?? '-' }}
                 </td>
             </tr>
         </table>

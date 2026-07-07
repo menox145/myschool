@@ -41,6 +41,7 @@
                     <tr>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Kelas</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tingkat</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Wali Kelas</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jumlah Siswa</th>
                         <th class="px-4 py-3 text-left">Tahun Pelajaran</th>
@@ -53,6 +54,7 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3">{{ $index + 1 }}</td>
                             <td class="px-4 py-3 font-medium">{{ $k->nama_kelas }}</td>
+                            <td class="px-4 py-3">{{ $k->tingkat }}</td>
                             <td class="px-4 py-3">{{ $k->guru->nama ?? '-' }}</td>
                             <td class="px-4 py-3">
                                 <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs">
@@ -107,6 +109,16 @@
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-yellow-500 @error('nama_kelas') border-red-500 @enderror"
                                 placeholder="Contoh: X RPL 1" value="{{ old('nama_kelas') }}" required>
                             @error('nama_kelas')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tingkat *</label>
+                            <input type="number" name="tingkat" id="tingkat"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-yellow-500 @error('tingkat') border-red-500 @enderror"
+                                min="1" max="6" value="{{ old('tingkat') }}" required>
+                            @error('tingkat')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -190,6 +202,7 @@
             document.getElementById('formKelas').action = `/kelas/${id}`;
             document.getElementById('methodField').value = 'PUT';
             document.getElementById('nama_kelas').value = data.nama_kelas || '';
+            document.getElementById('tingkat').value = data.tingkat || '';
             document.getElementById('guru_id').value = data.guru_id || '';
             document.getElementById('jumlah_siswa').value = data.jumlah_siswa || '';
             document.getElementById('tahun_pelajaran').value = data.tahun_pelajaran || '';

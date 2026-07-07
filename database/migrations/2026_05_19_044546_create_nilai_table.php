@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('pts')->nullable()->default(0);
             $table->integer('pas')->nullable()->default(0);
             $table->decimal('hpa', 5, 2)->nullable();
-            $table->string('predikat', 5)->nullable();
+            $table->string('predikat', 50)->nullable();
             $table->timestamps();
 
             $table->unique(['siswa_id', 'kelas_mapel_id', 'tahun_pelajaran_id'], 'nilai_unique');

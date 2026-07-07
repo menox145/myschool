@@ -75,6 +75,7 @@
                                     class="text-blue-600 hover:text-blue-800 mr-3">
                                     <i class="fas fa-edit"></i>
                                 </button>
+
                                 <form action="{{ route('guru.destroy', $g->id) }}" method="POST" class="inline"
                                     onsubmit="return confirm('Yakin hapus data?')">
                                     @csrf @method('DELETE')
@@ -112,11 +113,11 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">NIP *</label>
-                                <input type="text" inputmode="numeric" pattern="[0-9]*" name="nip" id="nip"
-                                    value="{{ old('nip') }}" maxlength="18" minlength="18"
-                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 18)"
+                                <input type="text" inputmode="numeric" name="nip" id="nip" maxlength="20"
+                                    minlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 20)"
+                                    value="{{ old('nip') }}"
                                     class="w-full px-3 py-2 border rounded-lg text-sm @error('nip') border-red-500 @enderror"
-                                    required placeholder="18 digit angka">
+                                    required placeholder="10-20 digit angka">
                                 @error('nip')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -222,6 +223,7 @@
         function openEditModal(id, data) {
             document.getElementById('modalTitle').innerText = 'Edit Data Guru';
             document.getElementById('formGuru').action = `/guru/${id}`;
+            document.getElementById('methodField').value = 'PUT';
             document.getElementById('methodField').value = 'PUT';
             document.getElementById('nip').value = data.nip || '';
             document.getElementById('nama').value = data.nama || '';

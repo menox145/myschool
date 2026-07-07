@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
+        if (Schema::hasColumn('mata_pelajaran', 'jenis_rapot')) {
+            return;
+        }
+
         Schema::table('mata_pelajaran', function (Blueprint $table) {
             $table->enum('jenis_rapot', ['dinniyyah', 'akademik', 'tahfidz'])
                 ->default('akademik')
@@ -17,6 +21,10 @@ return new class extends Migration {
 
     public function down(): void
     {
+        if (! Schema::hasColumn('mata_pelajaran', 'jenis_rapot')) {
+            return;
+        }
+
         Schema::table('mata_pelajaran', function (Blueprint $table) {
             $table->dropColumn('jenis_rapot');
             // $table->dropColumn('kkm'); // HAPUS JUGA

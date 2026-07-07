@@ -135,7 +135,12 @@
     </div>
     <div class="page">
         {{-- PANGGIL HEADER --}}
-        @include('layouts.kop-rapot', ['siswa' => $siswa, 'tahun' => $tahun, 'jenis' => 'DINIYYAH'])
+        @include('layouts.kop-rapot', [
+            'siswa' => $siswa,
+            'riwayat' => $riwayat,
+            'tahun' => $tahun,
+            'jenis' => 'DINIYYAH',
+        ])
 
         {{-- JUDUL --}}
 
@@ -179,7 +184,7 @@
         </table>
 
         {{-- PANGGIL FOOTER --}}
-        @include('layouts.ttd-rapot', ['siswa' => $siswa])
+        @include('layouts.ttd-rapot', ['siswa' => $siswa, 'riwayat' => $riwayat])
     </div>
 </body>
 

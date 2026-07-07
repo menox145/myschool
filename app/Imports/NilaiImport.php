@@ -5,7 +5,6 @@ namespace App\Imports;
 use App\Models\Nilai;
 use App\Models\Siswa;
 use App\Models\KelasMapel;
-use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -24,6 +23,9 @@ class NilaiImport implements ToModel, WithHeadingRow
         $siswa = Siswa::where('nis', $row['nis'])->first();
         if (!$siswa) return null;
 
+        $kelasMapel = KelasMapel::find($this->kelas_mapel_id);
+        if (!$kelasMapel) return null;
+
         $rph = $row['rph'] ?? 0;
         $pts = $row['pts'] ?? 0;
         $pas = $row['pas'] ?? 0;
@@ -34,7 +36,7 @@ class NilaiImport implements ToModel, WithHeadingRow
             'kelas_mapel_id' => $this->kelas_mapel_id,
             'tahun_pelajaran_id' => $this->tapel_id,
         ], [
-            'guru_id' => Auth::id(),
+            'guru_id' => $kelasMapel->guru_id,
             'rph' => $rph,
             'pts' => $pts,
             'pas' => $pas,
@@ -46,9 +48,10 @@ class NilaiImport implements ToModel, WithHeadingRow
     private function hitungPredikat($nilai)
     {
         if ($nilai === null || $nilai === 0) return null;
-        if ($nilai >= 90) return 'A';
-        if ($nilai >= 80) return 'B';
-        if ($nilai >= 70) return 'C';
-        return 'D';
+        if ($nilai >= 91) return '(Mumtaz) ممتاز';
+        if ($nilai >= 81) return '(Jayyid Jiddan) جيد جدا';
+        if ($nilai >= 71) return '(Jayyid) جيد';
+        if ($nilai >= 61) return '(Maqbul) مقبول';
+        return '(Rasib) راسب';
     }
 }

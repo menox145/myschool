@@ -8,6 +8,7 @@ class Kelas extends Model
 {
     protected $fillable = [
         'nama_kelas',
+        'tingkat',
         'guru_id', // TAMBAH INI
         'jumlah_siswa',
         'tahun_pelajaran',
@@ -29,10 +30,18 @@ class Kelas extends Model
 
     public function siswa()
     {
-        return $this->hasMany(Siswa::class, 'kelas_id', 'id');
+        return $this->belongsToMany(Siswa::class, 'riwayat_kelas', 'kelas_id', 'siswa_id')
+            ->withPivot(['tahun_pelajaran_id', 'status'])
+            ->withTimestamps();
     }
     public function kelasMapel()
     {
         return $this->hasMany(KelasMapel::class, 'kelas_id');
+    }
+
+    // Alias for the wali kelas relation used across views/controllers
+    public function waliKelas()
+    {
+        return $this->belongsTo(Guru::class, 'guru_id', 'id');
     }
 }

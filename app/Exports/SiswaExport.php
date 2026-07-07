@@ -18,7 +18,7 @@ class SiswaExport implements FromCollection, WithHeadings, WithMapping
 
     public function collection()
     {
-        return Siswa::with('kelas')
+        return Siswa::with('kelasAktif.kelas')
             ->when($this->request->search, function ($q) {
                 $q->where('nama', 'like', "%{$this->request->search}%")
                     ->orWhere('nis', 'like', "%{$this->request->search}%");
@@ -27,12 +27,14 @@ class SiswaExport implements FromCollection, WithHeadings, WithMapping
                 $q->where('jenis_kelamin', $this->request->jk);
             })
             ->when($this->request->kelas_id, function ($q) {
-                $q->where('kelas_id', $this->request->kelas_id);
+                $q->whereHas('riwayatKelas', function ($sub) {
+                    $sub->where('kelas_id', $this->request->kelas_id)
+                        ->where('status', 'aktif');
+                });
             })
             ->when($this->request->status, function ($q) {
                 $q->where('status', $this->request->status);
             })
-            ->orderBy('kelas_id')
             ->orderBy('nama')
             ->get();
     }
@@ -49,7 +51,7 @@ class SiswaExport implements FromCollection, WithHeadings, WithMapping
             $siswa->nisn,
             $siswa->nama,
             $siswa->jenis_kelamin,
-            $siswa->kelas->nama_kelas ?? '-',
+            $siswa->kelasAktif?->kelas?->nama_kelas ?? '-',
             $siswa->status,
             $siswa->tgl_lahir ? date('Y-m-d', strtotime($siswa->tgl_lahir)) : '',
             $siswa->alamat,

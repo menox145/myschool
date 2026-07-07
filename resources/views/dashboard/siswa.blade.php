@@ -21,6 +21,10 @@
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-lg font-semibold text-gray-800">Data Siswa</h3>
             <div class="flex gap-2">
+                <a href="{{ route('siswa.riwayat.index') }}"
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded text-sm flex items-center">
+                    <i class="fas fa-history mr-2"></i>Riwayat
+                </a>
                 <button onclick="openModalImport()"
                     class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition-all flex items-center">
                     <i class="fas fa-file-import mr-2"></i>Import Excel
@@ -74,30 +78,6 @@
             </button>
         </div>
 
-        <script>
-            function applyFilter() {
-                const params = new URLSearchParams();
-                if (document.getElementById('search').value) params.append('search', document.getElementById('search').value);
-                if (document.getElementById('filter_jk').value) params.append('jk', document.getElementById('filter_jk').value);
-                if (document.getElementById('filter_kelas').value) params.append('kelas_id', document.getElementById(
-                    'filter_kelas').value);
-                if (document.getElementById('filter_status').value) params.append('status', document.getElementById(
-                    'filter_status').value);
-
-                window.location.href = '{{ route('siswa') }}?' + params.toString();
-            }
-
-            function exportData() {
-                const params = new URLSearchParams(window.location.search);
-                window.location.href = '{{ route('siswa.export') }}?' + params.toString();
-            }
-
-            // Enter di search langsung filter
-            document.getElementById('search').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') applyFilter();
-            });
-        </script>
-
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-50">
@@ -135,7 +115,8 @@
                                     {{ $s->jenis_kelamin }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-sm">{{ $s->kelas->nama_kelas ?? '-' }}</td>
+                            {{-- Tampilkan kelas aktif dari riwayat kelas jika ada --}}
+                            <td class="px-4 py-3 text-sm">{{ $s->kelasAktif?->kelas?->nama_kelas ?? '-' }}</td>
                             <td class="px-4 py-3">
                                 @php
                                     $statusColor = [
@@ -151,7 +132,7 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                <button onclick='editSiswa(@json($s))'
+                                <button type="button" onclick="editSiswaById({{ $s->id }})"
                                     class="text-blue-600 hover:text-blue-800 mr-3">
                                     <i class="fas fa-edit"></i>
                                 </button>
@@ -167,216 +148,199 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">Belum ada data siswa</td>
+                            <td colspan="8" class="px-4 py-8 text-center text-gray-500">Belum ada data siswa</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+    </div>
 
-        <!-- Modal Tambah Siswa -->
-        <div id="modalSiswa" class="fixed inset-0 z-50 overflow-y-auto hidden">
-            <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeModalSiswa()"></div>
+    <!-- Modal Tambah Siswa -->
+    <div id="modalSiswa" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeModalSiswa()"></div>
+        <div class="flex items-center justify-center min-h-screen px-4 py-6">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 relative">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-800">Tambah Data Siswa</h3>
+                    <button onclick="closeModalSiswa()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
 
-            <div class="flex items-center justify-center min-h-screen px-4 py-6">
-                <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 relative">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-bold text-gray-800">Tambah Data Siswa</h3>
-                        <button onclick="closeModalSiswa()" class="text-gray-400 hover:text-gray-600">
-                            <i class="fas fa-times"></i>
-                        </button>
+                <form action="{{ route('siswa.store') }}" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">NIS *</label>
+                            <input type="text" inputmode="numeric" pattern="[0-9]*" name="nis"
+                                value="{{ old('nis') }}"
+                                class="w-full px-3 py-2 border rounded-lg text-sm @error('nis') border-red-500 @enderror"
+                                required maxlength="25" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            @error('nis')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">NISN *</label>
+                            <input type="text" inputmode="numeric" pattern="[0-9]*" name="nisn"
+                                value="{{ old('nisn') }}"
+                                class="w-full px-3 py-2 border rounded-lg text-sm @error('nisn') border-red-500 @enderror"
+                                required maxlength="25" minlength="10"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 25)"
+                                placeholder="25 digit angka">
+                            @error('nisn')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap *</label>
+                            <input type="text" name="nama" value="{{ old('nama') }}"
+                                class="w-full px-3 py-2 border rounded-lg text-sm @error('nama') border-red-500 @enderror"
+                                required>
+                            @error('nama')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin *</label>
+                            <select name="jenis_kelamin"
+                                class="w-full px-3 py-2 border rounded-lg text-sm @error('jenis_kelamin') border-red-500 @enderror"
+                                required>
+                                <option value="">-- Pilih --</option>
+                                <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki
+                                </option>
+                                <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan
+                                </option>
+                            </select>
+                            @error('jenis_kelamin')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- HAPUS SELECT KELAS - GANTI INFO --}}
+                        <div class="mb-4 col-span-2">
+                            <div class="bg-yellow-50 border border-yellow-200 p-3 rounded text-sm text-yellow-800">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Setelah simpan, daftarkan siswa ke kelas lewat menu <strong>Registrasi/Kenaikan
+                                    Kelas</strong>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Lahir *</label>
+                            <input type="date" name="tgl_lahir" value="{{ old('tgl_lahir') }}"
+                                class="w-full px-3 py-2 border rounded-lg text-sm @error('tgl_lahir') border-red-500 @enderror"
+                                required>
+                            @error('tgl_lahir')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">No HP</label>
+                            <input type="text" name="no_hp" value="{{ old('no_hp') }}"
+                                class="w-full px-3 py-2 border rounded-lg text-sm @error('no_hp') border-red-500 @enderror">
+                            @error('no_hp')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4 col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
+                            <textarea name="alamat" rows="2"
+                                class="w-full px-3 py-2 border rounded-lg text-sm @error('alamat') border-red-500 @enderror">{{ old('alamat') }}</textarea>
+                            @error('alamat')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4 col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Foto</label>
+                            <input type="file" name="foto" accept="image/*"
+                                class="w-full px-3 py-2 border rounded-lg text-sm @error('foto') border-red-500 @enderror">
+                            @error('foto')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Ayah</label>
+                            <input type="text" name="nama_ayah" value="{{ old('nama_ayah') }}"
+                                class="w-full px-3 py-2 border rounded-lg text-sm">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Ibu</label>
+                            <input type="text" name="nama_ibu" value="{{ old('nama_ibu') }}"
+                                class="w-full px-3 py-2 border rounded-lg text-sm">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan Ayah</label>
+                            <input type="text" name="pekerjaan_ayah" value="{{ old('pekerjaan_ayah') }}"
+                                class="w-full px-3 py-2 border rounded-lg text-sm">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan Ibu</label>
+                            <input type="text" name="pekerjaan_ibu" value="{{ old('pekerjaan_ibu') }}"
+                                class="w-full px-3 py-2 border rounded-lg text-sm">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Penghasilan Ayah</label>
+                            <input type="number" name="penghasilan_ayah" value="{{ old('penghasilan_ayah') }}"
+                                class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="5000000">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Penghasilan Ibu</label>
+                            <input type="number" name="penghasilan_ibu" value="{{ old('penghasilan_ibu') }}"
+                                class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="3000000">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Anak Ke-</label>
+                            <input type="number" name="anak_ke" value="{{ old('anak_ke') }}"
+                                class="w-full px-3 py-2 border rounded-lg text-sm" min="1">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tahun Masuk</label>
+                            <input type="number" name="tahun_masuk" value="{{ old('tahun_masuk', date('Y')) }}"
+                                class="w-full px-3 py-2 border rounded-lg text-sm" min="2000"
+                                max="{{ date('Y') }}">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
+                            <select name="status" class="w-full px-3 py-2 border rounded-lg text-sm" required>
+                                <option value="Aktif" {{ old('status', 'Aktif') == 'Aktif' ? 'selected' : '' }}>Aktif
+                                </option>
+                                <option value="Lulus" {{ old('status') == 'Lulus' ? 'selected' : '' }}>Lulus</option>
+                                <option value="Pindah" {{ old('status') == 'Pindah' ? 'selected' : '' }}>Pindah</option>
+                                <option value="Drop Out" {{ old('status') == 'Drop Out' ? 'selected' : '' }}>Drop Out
+                                </option>
+                            </select>
+                        </div>
                     </div>
 
-                    <form action="{{ route('siswa.store') }}" method="post" enctype="multipart/form-data">
-                        @csrf
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">NIS *</label>
-                                <input type="text" inputmode="numeric" pattern="[0-9]*" name="nis"
-                                    value="{{ old('nis') }}"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm @error('nis') border-red-500 @enderror"
-                                    required maxlength="25" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                                @error('nis')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">NISN *</label>
-                                <input type="text" inputmode="numeric" pattern="[0-9]*" name="nisn"
-                                    value="{{ old('nisn') }}"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm @error('nisn') border-red-500 @enderror"
-                                    required maxlength="25" minlength="10"
-                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 25)"
-                                    placeholder="25 digit angka">
-                                @error('nisn')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap *</label>
-                                <input type="text" name="nama" value="{{ old('nama') }}"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm @error('nama') border-red-500 @enderror"
-                                    required>
-                                @error('nama')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin *</label>
-                                <select name="jenis_kelamin"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm @error('jenis_kelamin') border-red-500 @enderror"
-                                    required>
-                                    <option value="">-- Pilih --</option>
-                                    <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki
-                                    </option>
-                                    <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan
-                                    </option>
-                                </select>
-                                @error('jenis_kelamin')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Kelas *</label>
-                                <select name="kelas_id"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm @error('kelas_id') border-red-500 @enderror"
-                                    required>
-                                    <option value="">-- Pilih Kelas --</option>
-                                    @foreach ($kelas as $k)
-                                        <option value="{{ $k->id }}"
-                                            {{ old('kelas_id') == $k->id ? 'selected' : '' }}>
-                                            {{ $k->nama_kelas }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('kelas_id')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Lahir</label>
-                                <input type="date" name="tgl_lahir" value="{{ old('tgl_lahir') }}"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm @error('tgl_lahir') border-red-500 @enderror">
-                                @error('tgl_lahir')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">No HP</label>
-                                <input type="text" name="no_hp" value="{{ old('no_hp') }}"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm @error('no_hp') border-red-500 @enderror">
-                                @error('no_hp')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="mb-4 col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
-                                <textarea name="alamat" rows="2"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm @error('alamat') border-red-500 @enderror">{{ old('alamat') }}</textarea>
-                                @error('alamat')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="mb-4 col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Foto</label>
-                                <input type="file" name="foto" accept="image/*"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm @error('foto') border-red-500 @enderror">
-                                @error('foto')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-                        <!-- Input Ortu -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Ayah</label>
-                                <input type="text" name="nama_ayah" value="{{ old('nama_ayah') }}"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm">
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Ibu</label>
-                                <input type="text" name="nama_ibu" value="{{ old('nama_ibu') }}"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan Ayah</label>
-                                <input type="text" name="pekerjaan_ayah" value="{{ old('pekerjaan_ayah') }}"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm">
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan Ibu</label>
-                                <input type="text" name="pekerjaan_ibu" value="{{ old('pekerjaan_ibu') }}"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Penghasilan Ayah</label>
-                                <input type="number" name="penghasilan_ayah" value="{{ old('penghasilan_ayah') }}"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="5000000">
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Penghasilan Ibu</label>
-                                <input type="number" name="penghasilan_ibu" value="{{ old('penghasilan_ibu') }}"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="3000000">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-3 gap-4">
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Anak Ke-</label>
-                                <input type="number" name="anak_ke" value="{{ old('anak_ke') }}"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm" min="1">
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Tahun Masuk</label>
-                                <input type="number" name="tahun_masuk" value="{{ old('tahun_masuk', date('Y')) }}"
-                                    class="w-full px-3 py-2 border rounded-lg text-sm" min="2000"
-                                    max="{{ date('Y') }}">
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
-                                <select name="status" class="w-full px-3 py-2 border rounded-lg text-sm" required>
-                                    <option value="Aktif" {{ old('status', 'Aktif') == 'Aktif' ? 'selected' : '' }}>Aktif
-                                    </option>
-                                    <option value="Lulus" {{ old('status') == 'Lulus' ? 'selected' : '' }}>Lulus</option>
-                                    <option value="Pindah" {{ old('status') == 'Pindah' ? 'selected' : '' }}>Pindah
-                                    </option>
-                                    <option value="Drop Out" {{ old('status') == 'Drop Out' ? 'selected' : '' }}>Drop Out
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end space-x-3 mt-4">
-                            <button type="button" onclick="closeModalSiswa()"
-                                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300">
-                                Batal
-                            </button>
-                            <button type="submit"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
-                                Simpan
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="flex justify-end space-x-3 mt-4">
+                        <button type="button" onclick="closeModalSiswa()"
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
+                            Simpan
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-    </div><!-- Modal Edit Siswa -->
+    </div>
+
+    <!-- Modal Edit Siswa -->
     <div id="modalEditSiswa" class="fixed inset-0 z-50 overflow-y-auto hidden">
         <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeModalEditSiswa()"></div>
-
         <div class="flex items-center justify-center min-h-screen px-4 py-6">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 relative">
                 <div class="flex justify-between items-center mb-4">
@@ -417,15 +381,12 @@
                             </select>
                         </div>
 
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Kelas *</label>
-                            <select name="kelas_id" id="edit_kelas_id" class="w-full px-3 py-2 border rounded-lg text-sm"
-                                required>
-                                <option value="">-- Pilih Kelas --</option>
-                                @foreach ($kelas as $k)
-                                    <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
-                                @endforeach
-                            </select>
+                        {{-- HAPUS SELECT KELAS DI EDIT JUGA --}}
+                        <div class="mb-4 col-span-2">
+                            <div class="bg-blue-50 border border-blue-200 p-3 rounded text-sm text-blue-800">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Untuk pindah kelas, gunakan menu <strong>Registrasi/Kenaikan Kelas</strong>
+                            </div>
                         </div>
 
                         <div class="mb-4">
@@ -451,10 +412,7 @@
                                 class="w-full px-3 py-2 border rounded-lg text-sm">
                             <img id="edit_foto_preview" class="w-20 h-20 object-cover rounded mt-2 hidden">
                         </div>
-                    </div>
 
-                    <!-- Input Ortu -->
-                    <div class="grid grid-cols-2 gap-4">
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Nama Ayah</label>
                             <input type="text" name="nama_ayah" id="edit_nama_ayah"
@@ -465,9 +423,7 @@
                             <input type="text" name="nama_ibu" id="edit_nama_ibu"
                                 class="w-full px-3 py-2 border rounded-lg text-sm">
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-2 gap-4">
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan Ayah</label>
                             <input type="text" name="pekerjaan_ayah" id="edit_pekerjaan_ayah"
@@ -478,9 +434,7 @@
                             <input type="text" name="pekerjaan_ibu" id="edit_pekerjaan_ibu"
                                 class="w-full px-3 py-2 border rounded-lg text-sm">
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-2 gap-4">
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Penghasilan Ayah</label>
                             <input type="number" name="penghasilan_ayah" id="edit_penghasilan_ayah"
@@ -491,9 +445,7 @@
                             <input type="number" name="penghasilan_ibu" id="edit_penghasilan_ibu"
                                 class="w-full px-3 py-2 border rounded-lg text-sm">
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-3 gap-4">
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Anak Ke-</label>
                             <input type="number" name="anak_ke" id="edit_anak_ke"
@@ -531,6 +483,7 @@
             </div>
         </div>
     </div>
+
     <!-- Modal Import -->
     <div id="modalImport" class="fixed inset-0 z-50 overflow-y-auto hidden">
         <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeModalImport()"></div>
@@ -570,19 +523,60 @@
     </div>
 
     <script>
-        function openModalImport() {
-            document.getElementById('modalImport').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+        const siswaData = @js($siswa->mapWithKeys(fn($item) => [
+            $item->id => $item->only([
+                'id',
+                'nis',
+                'nisn',
+                'nama',
+                'jenis_kelamin',
+                'tgl_lahir',
+                'no_hp',
+                'alamat',
+                'foto',
+                'nama_ayah',
+                'nama_ibu',
+                'pekerjaan_ayah',
+                'pekerjaan_ibu',
+                'penghasilan_ayah',
+                'penghasilan_ibu',
+                'anak_ke',
+                'tahun_masuk',
+                'status',
+            ]),
+        ]));
+
+        function editSiswaById(id) {
+            const data = siswaData[id];
+
+            if (!data) {
+                alert('Data siswa tidak ditemukan. Silakan refresh halaman.');
+                return;
+            }
+
+            editSiswa(data);
         }
 
-        function closeModalImport() {
-            document.getElementById('modalImport').classList.add('hidden');
-            document.body.style.overflow = 'auto';
+        function applyFilter() {
+            const params = new URLSearchParams();
+            if (document.getElementById('search').value) params.append('search', document.getElementById('search').value);
+            if (document.getElementById('filter_jk').value) params.append('jk', document.getElementById('filter_jk').value);
+            if (document.getElementById('filter_kelas').value) params.append('kelas_id', document.getElementById(
+                'filter_kelas').value);
+            if (document.getElementById('filter_status').value) params.append('status', document.getElementById(
+                'filter_status').value);
+            window.location.href = '{{ route('siswa') }}?' + params.toString();
         }
-        // ... script modal lainnya tetap
-    </script>
 
-    <script>
+        function exportData() {
+            const params = new URLSearchParams(window.location.search);
+            window.location.href = '{{ route('siswa.export') }}?' + params.toString();
+        }
+
+        document.getElementById('search').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') applyFilter();
+        });
+
         function openModalSiswa() {
             document.getElementById('modalSiswa').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -593,24 +587,35 @@
             document.body.style.overflow = 'auto';
         }
 
+        function openModalImport() {
+            document.getElementById('modalImport').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModalImport() {
+            document.getElementById('modalImport').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
         function editSiswa(data) {
             document.getElementById('formEditSiswa').action = `/siswa/${data.id}`;
-            document.getElementById('edit_nis').value = data.nis;
-            document.getElementById('edit_nama').value = data.nama;
-            document.getElementById('edit_jenis_kelamin').value = data.jenis_kelamin;
-            document.getElementById('edit_kelas_id').value = data.kelas_id;
-            document.getElementById('edit_tgl_lahir').value = data.tgl_lahir;
-            document.getElementById('edit_no_hp').value = data.no_hp;
-            document.getElementById('edit_alamat').value = data.alamat;
-            document.getElementById('edit_nama_ayah').value = data.nama_ayah;
-            document.getElementById('edit_nama_ibu').value = data.nama_ibu;
-            document.getElementById('edit_pekerjaan_ayah').value = data.pekerjaan_ayah;
-            document.getElementById('edit_pekerjaan_ibu').value = data.pekerjaan_ibu;
-            document.getElementById('edit_penghasilan_ayah').value = data.penghasilan_ayah;
-            document.getElementById('edit_penghasilan_ibu').value = data.penghasilan_ibu;
-            document.getElementById('edit_anak_ke').value = data.anak_ke;
-            document.getElementById('edit_tahun_masuk').value = data.tahun_masuk;
-            document.getElementById('edit_status').value = data.status;
+            document.getElementById('edit_nis').value = data.nis || '';
+            document.getElementById('edit_nisn').value = data.nisn || '';
+            document.getElementById('edit_nama').value = data.nama || '';
+            document.getElementById('edit_jenis_kelamin').value = data.jenis_kelamin || '';
+            // HAPUS set kelas_id - ga ada lagi
+            document.getElementById('edit_tgl_lahir').value = data.tgl_lahir || '';
+            document.getElementById('edit_no_hp').value = data.no_hp || '';
+            document.getElementById('edit_alamat').value = data.alamat || '';
+            document.getElementById('edit_nama_ayah').value = data.nama_ayah || '';
+            document.getElementById('edit_nama_ibu').value = data.nama_ibu || '';
+            document.getElementById('edit_pekerjaan_ayah').value = data.pekerjaan_ayah || '';
+            document.getElementById('edit_pekerjaan_ibu').value = data.pekerjaan_ibu || '';
+            document.getElementById('edit_penghasilan_ayah').value = data.penghasilan_ayah || '';
+            document.getElementById('edit_penghasilan_ibu').value = data.penghasilan_ibu || '';
+            document.getElementById('edit_anak_ke').value = data.anak_ke || '';
+            document.getElementById('edit_tahun_masuk').value = data.tahun_masuk || '';
+            document.getElementById('edit_status').value = data.status || 'Aktif';
 
             if (data.foto) {
                 document.getElementById('edit_foto_preview').src = `/storage/${data.foto}`;

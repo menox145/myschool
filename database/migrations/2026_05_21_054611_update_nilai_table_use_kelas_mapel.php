@@ -11,10 +11,30 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('nilai', function (Blueprint $table) {
-            $table->dropForeign(['kelas_id']);
-            $table->dropForeign(['mapel_id']);
-            $table->dropColumn(['kelas_id', 'mapel_id']);
+        $columns = [];
+
+        if (Schema::hasColumn('nilai', 'kelas_id')) {
+            $columns[] = 'kelas_id';
+        }
+
+        if (Schema::hasColumn('nilai', 'mapel_id')) {
+            $columns[] = 'mapel_id';
+        }
+
+        if (empty($columns)) {
+            return;
+        }
+
+        Schema::table('nilai', function (Blueprint $table) use ($columns) {
+            if (in_array('kelas_id', $columns, true)) {
+                $table->dropForeign(['kelas_id']);
+            }
+
+            if (in_array('mapel_id', $columns, true)) {
+                $table->dropForeign(['mapel_id']);
+            }
+
+            $table->dropColumn($columns);
         });
     }
 

@@ -31,7 +31,9 @@
                 <td style="border: none;"><b>{{ strtoupper($siswa->nama ?? '-') }}</b></td>
                 <td width="130" style="border: none;">Kelas</td>
                 <td width="10" style="border: none;">:</td>
-                <td style="border: none;"><b>{{ optional($siswa->kelas)->nama_kelas ?? '-' }}</b></td>
+                <td style="border: none;">
+                    <b>{{ $riwayat?->kelas?->nama_kelas ?? $siswa->kelasAktif?->kelas?->nama_kelas ?? '-' }}</b>
+                </td>
             </tr>
             <tr>
                 <td style="border: none; padding: 2px 0;">Nomor Induk</td>
@@ -65,7 +67,7 @@
                 <td style="border: none;"><b>{{ $kelas->nama_kelas }}</b></td>
                 <td width="130" style="border: none;">Wali Kelas</td>
                 <td width="10" style="border: none;">:</td>
-                <td style="border: none;"><b>{{ optional($kelas->waliKelas)->name ?? '-' }}</b></td>
+                <td style="border: none;"><b>{{ optional($kelas->waliKelas)->nama ?? '-' }}</b></td>
             </tr>
             <tr>
                 <td style="border: none; padding: 2px 0;">Semester</td>

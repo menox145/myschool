@@ -135,7 +135,12 @@
     </div>
     <div class="page">
         {{-- PANGGIL HEADER --}}
-        @include('layouts.kop-rapot', ['siswa' => $siswa, 'tahun' => $tahun, 'jenis' => 'AKADEMIK'])
+        @include('layouts.kop-rapot', [
+            'siswa' => $siswa,
+            'riwayat' => $riwayat,
+            'tahun' => $tahun,
+            'jenis' => 'AKADEMIK',
+        ])
 
         {{-- TABEL NILAI AKADEMIK --}}
         <table class="nilai">
@@ -177,7 +182,7 @@
         </table>
 
         {{-- PANGGIL FOOTER --}}
-        @include('layouts.ttd-rapot', ['siswa' => $siswa])
+        @include('layouts.ttd-rapot', ['siswa' => $siswa, 'riwayat' => $riwayat])
     </div>
 </body>
 

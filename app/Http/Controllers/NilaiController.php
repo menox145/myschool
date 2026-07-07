@@ -8,12 +8,12 @@ use App\Models\MataPelajaran;
 use App\Models\TahunPelajaran;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\NilaiImport;
 use App\Models\KelasMapel;
+use App\Models\RiwayatKelas;
 
 class NilaiController extends Controller
 {
@@ -48,7 +48,7 @@ class NilaiController extends Controller
                 ->get();
 
             if ($kelasMapelList->count() > 0) {
-                $siswa = Siswa::where('kelas_id', $kelasSelected)->orderBy('nama')->get();
+                $siswa = $this->siswaByKelas($kelasSelected, $tapelAktif->id);
 
                 // Ambil nilai: siswa_id => [kelas_mapel_id => nilai]
                 $nilaiSiswa = Nilai::whereIn('kelas_mapel_id', $kelasMapelList->pluck('id'))
@@ -80,6 +80,11 @@ class NilaiController extends Controller
 
         foreach ($request->nilai as $siswa_id => $mapelData) {
             foreach ($mapelData as $km_id => $data) {
+                $kelasMapel = KelasMapel::find($km_id);
+                if (! $kelasMapel) {
+                    continue;
+                }
+
                 // Ambil nilai lama biar RPH nggak kehapus
                 $nilaiLama = Nilai::where('siswa_id', $siswa_id)
                     ->where('kelas_mapel_id', $km_id)
@@ -108,7 +113,7 @@ class NilaiController extends Controller
                         'tahun_pelajaran_id' => $request->tahun_pelajaran_id,
                     ],
                     [
-                        'guru_id' => Auth::id(),
+                        'guru_id' => $kelasMapel->guru_id,
                         'rph' => $rph, // Jangan diupdate, ambil dari UH
                         'pts' => $pts,
                         'pas' => $pas,
@@ -138,7 +143,7 @@ class NilaiController extends Controller
         $request->validate(['kelas_mapel_id' => 'required|exists:kelas_mapel,id']);
 
         $km = KelasMapel::with('kelas', 'mapel')->find($request->kelas_mapel_id);
-        $siswa = Siswa::where('kelas_id', $km->kelas_id)->get(['nis', 'nama']);
+        $siswa = $this->siswaByKelas($km->kelas_id, $km->tahun_pelajaran_id);
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -202,7 +207,7 @@ class NilaiController extends Controller
                 ->select('kelas_mapel.*')
                 ->get();
 
-            $siswa = Siswa::where('kelas_id', $kelasSelected)->orderBy('nama')->get();
+            $siswa = $this->siswaByKelas($kelasSelected, $tapelAktif->id);
         }
 
         return view('dashboard.uh', compact(
@@ -248,7 +253,7 @@ class NilaiController extends Controller
                 $rata_uh = round(array_sum($uh) / count($uh), 2);
                 $updateData['rata_uh'] = $rata_uh;
                 $updateData['rph'] = $rata_uh;
-                $updateData['guru_id'] = Auth::id();
+                $updateData['guru_id'] = $km->guru_id;
 
                 Nilai::updateOrCreate(
                     [
@@ -262,5 +267,14 @@ class NilaiController extends Controller
         }
 
         return back()->with('success', 'Nilai UH berhasil disimpan');
+    }
+
+    private function siswaByKelas($kelasId, $tahunPelajaranId)
+    {
+        return Siswa::whereHas('riwayatKelas', function ($q) use ($kelasId, $tahunPelajaranId) {
+            $q->where('kelas_id', $kelasId)
+                ->where('tahun_pelajaran_id', $tahunPelajaranId)
+                ->where('status', 'aktif');
+        })->orderBy('nama')->get();
     }
 }

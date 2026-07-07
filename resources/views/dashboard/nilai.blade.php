@@ -46,7 +46,7 @@
                 @if ($kelasSelected)
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">Pilih Jenis Rapot *</label>
-                        <select name="jenis_rapot"
+                        <select name="jenis_rapot" onchange="this.form.submit()"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
                             required>
                             <option value="">-- Pilih Jenis --</option>
@@ -60,7 +60,7 @@
                     <div class="flex items-end">
                         <button type="submit"
                             class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 w-full transition">
-                            <i class="fas fa-search mr-1"></i>Tampilkan
+                            <i class="fas fa-search mr-1"></i>Muat Ulang
                         </button>
                     </div>
                 @endif
@@ -95,7 +95,7 @@
                                     class="px-2 py-2 text-xs font-semibold text-gray-600 uppercase w-48 align-middle border-r sticky left-0 bg-gray-100 z-10">
                                     Nama Siswa</th>
                                 @foreach ($kelasMapelList as $km)
-                                    <th colspan="3"
+                                    <th colspan="4"
                                         class="px-2 py-2 text-xs font-semibold text-gray-700 uppercase text-center border-l
                                         @if ($jenisSelected == 'akademik') bg-red-50
                                         @elseif($jenisSelected == 'dinniyyah') bg-yellow-50
@@ -106,8 +106,10 @@
                             </tr>
                             <tr>
                                 @foreach ($kelasMapelList as $km)
-                                    <th class="px-1 py-1 text-xs font-semibold text-gray-600 w-16 border-l bg-blue-50">RPH
+                                    <th class="px-1 py-1 text-xs font-semibold text-gray-600 w-16 border-l bg-green-50">
+                                        Rata UH
                                     </th>
+                                    <th class="px-1 py-1 text-xs font-semibold text-gray-600 w-16 bg-blue-50">RPH</th>
                                     <th class="px-1 py-1 text-xs font-semibold text-gray-600 w-16">PTS</th>
                                     <th class="px-1 py-1 text-xs font-semibold text-gray-600 w-16">PAS</th>
                                 @endforeach
@@ -123,8 +125,12 @@
 
                                     @foreach ($kelasMapelList as $km)
                                         @php $n = $nilaiSiswa[$s->id][$km->id]?? null @endphp
+                                        {{-- RATA-RATA UH - READONLY --}}
+                                        <td class="px-1 py-1 border-l text-center text-sm font-bold bg-green-50">
+                                            {{ $n?->rata_uh ?? '-' }}
+                                        </td>
                                         {{-- RPH DARI UH - READONLY --}}
-                                        <td class="px-1 py-1 border-l text-center text-sm font-bold bg-blue-50">
+                                        <td class="px-1 py-1 text-center text-sm font-bold bg-blue-50">
                                             {{ $n->rph ?? ($n->rata_uh ?? '-') }}
                                             <input type="hidden"
                                                 name="nilai[{{ $s->id }}][{{ $km->id }}][rph]"
@@ -216,7 +222,7 @@
                 e.preventDefault();
                 const allInputs = Array.from(document.querySelectorAll('tbody input[type="number"]'));
                 const currentIndex = allInputs.indexOf(e.target);
-                const colsPerRow = {{ $kelasMapelList->count() * 2 }}; // PTS + PAS doang
+                const colsPerRow = {{ $kelasMapelList->count() * 2 }}; // PTS + PAS saja
                 const nextIndex = currentIndex + colsPerRow;
                 if (allInputs[nextIndex]) {
                     allInputs[nextIndex].focus();

@@ -53,7 +53,7 @@
                     <td>{{ $s->nis }}</td>
                     <td>{{ $s->nama }}</td>
                     <td>{{ $s->jenis_kelamin }}</td>
-                    <td>{{ $s->kelas->nama_kelas ?? '-' }}</td>
+                    <td>{{ $s->kelasAktif?->kelas?->nama_kelas ?? '-' }}</td>
                     <td>{{ $s->alamat ?? '-' }}</td>
                     <td>{{ $s->status }}</td>
                 </tr>

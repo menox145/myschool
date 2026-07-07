@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasColumn('mata_pelajaran', 'jenis_rapot')) {
+            return;
+        }
+
         Schema::table('mata_pelajaran', function (Blueprint $table) {
             $table->enum('jenis_rapot', ['akademik', 'dinniyyah', 'tahfidz'])
                 ->default('akademik')
@@ -19,6 +23,10 @@ return new class extends Migration
     }
     public function down(): void
     {
+        if (! Schema::hasColumn('mata_pelajaran', 'jenis_rapot')) {
+            return;
+        }
+
         Schema::table('mata_pelajaran', function (Blueprint $table) {
             $table->dropColumn('jenis_rapot');
         });

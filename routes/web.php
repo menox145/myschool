@@ -9,6 +9,7 @@ use App\Http\Controllers\NilaiController;
 use App\Http\Controllers\KelasMapelController;
 use App\Http\Controllers\RapotController;
 use App\Http\Controllers\NilaiHarianController;
+use App\Http\Controllers\KenaikanKelasController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -58,6 +59,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/cetak-kelas/{tahun_pelajaran_id}/{kelas_id}/{jenis_rapot}', [RapotController::class, 'cetakKelas'])->name('cetak.kelas');
         });
     });
+    // Riwayat Siswa: admin + guru dapat lihat perkembangan dari tahun ke tahun
+    Route::get('siswa/riwayat', [DashboardController::class, 'riwayatIndex'])->name('siswa.riwayat.index');
+
 
     // GRUP ADMIN: Cuma Admin
     Route::middleware('admin')->group(function () {
@@ -95,5 +99,13 @@ Route::middleware('auth')->group(function () {
 
         // Resource Nilai - taro paling bawah biar nggak nabrak route spesifik di atas
         Route::resource('nilai', NilaiController::class)->except(['index', 'store']);
+    });
+
+    // GRUP ADMIN: Cuma Admin
+    Route::middleware('admin')->group(function () {
+        // Route Kenaikan Kelas
+        Route::get('kenaikan-kelas', [KenaikanKelasController::class, 'index'])->name('kenaikan-kelas.index');
+        Route::post('kenaikan-kelas', [KenaikanKelasController::class, 'store'])->name('kenaikan-kelas.store');
+        Route::get('api/siswa-by-kelas', [KenaikanKelasController::class, 'getSiswaByKelas'])->name('api.siswa-by-kelas');
     });
 });

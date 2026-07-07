@@ -68,6 +68,21 @@
                         <i class="fas fa-print mr-3"></i>
                         Cetak Rapot
                     </a>
+
+                    <a href="{{ route('siswa.riwayat.index') }}"
+                        class="sidebar-link flex items-center px-6 py-3 text-sm @if (request()->routeIs('siswa.riwayat*')) active @endif">
+                        <i class="fas fa-history mr-3"></i>
+                        Riwayat Siswa
+                    </a>
+
+                    {{-- MENU BARU: KENAIKAN KELAS --}}
+                    @if (auth()->user()->role === 'admin')
+                        <a href="{{ route('kenaikan-kelas.index') }}"
+                            class="sidebar-link flex items-center px-6 py-3 text-sm @if (request()->routeIs('kenaikan-kelas*')) active @endif">
+                            <i class="fas fa-level-up-alt mr-3"></i>
+                            Kenaikan Kelas
+                        </a>
+                    @endif
                 @endif
 
                 {{-- MASTER DATA: Admin Only --}}

@@ -11,6 +11,7 @@ use App\Http\Controllers\RapotController;
 use App\Http\Controllers\NilaiHarianController;
 use App\Http\Controllers\KenaikanKelasController;
 use App\Http\Controllers\AbsenController;
+use App\Http\Controllers\GuruPiketController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -113,5 +114,8 @@ Route::middleware('auth')->group(function () {
         Route::get('kenaikan-kelas', [KenaikanKelasController::class, 'index'])->name('kenaikan-kelas.index');
         Route::post('kenaikan-kelas', [KenaikanKelasController::class, 'store'])->name('kenaikan-kelas.store');
         Route::get('api/siswa-by-kelas', [KenaikanKelasController::class, 'getSiswaByKelas'])->name('api.siswa-by-kelas');
+
+        // Master Jadwal Piket
+        Route::resource('guru-piket', GuruPiketController::class)->except(['create', 'show', 'edit']);
     });
 });

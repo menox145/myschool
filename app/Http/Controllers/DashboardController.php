@@ -30,7 +30,24 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return view('dashboard.index');
+        $totalSiswa = Siswa::count();
+        $totalGuru = Guru::count();
+        $totalKelas = Kelas::count();
+        $totalMapel = \App\Models\MataPelajaran::count();
+
+        // Group piket by hari, maintain order Senin-Jumat
+        $piketAll = \App\Models\GuruPiket::with('guru')->orderBy('urutan')->get();
+        $piket = $piketAll->groupBy('hari');
+
+        // Maintain correct day order
+        $hariOrder = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+        $piket = collect($hariOrder)->mapWithKeys(function ($hari) use ($piket) {
+            return [$hari => $piket->get($hari, collect())];
+        })->filter(function ($group) {
+            return $group->isNotEmpty();
+        });
+
+        return view('dashboard.index', compact('totalSiswa', 'totalGuru', 'totalKelas', 'totalMapel', 'piket'));
     }
 
     public function siswa(Request $request)
@@ -417,7 +434,6 @@ class DashboardController extends Controller
             'nama_kelas' => 'required|string|max:50|unique:kelas,nama_kelas',
             'tingkat' => 'required|integer|min:1|max:6',
             'guru_id' => 'required|exists:gurus,id',
-            'jumlah_siswa' => 'required|integer|min:0',
             'tahun_pelajaran' => 'required|string',
         ]);
 
@@ -430,7 +446,7 @@ class DashboardController extends Controller
             'nama_kelas' => $request->nama_kelas,
             'tingkat' => $request->tingkat,
             'guru_id' => $request->guru_id,
-            'jumlah_siswa' => $request->jumlah_siswa,
+            'jumlah_siswa' => 0,
             'tahun_pelajaran' => $request->tahun_pelajaran,
             'user_id' => Auth::id(),
             'nama_penambah' => Auth::user()->name,
@@ -448,7 +464,6 @@ class DashboardController extends Controller
             'nama_kelas' => 'required|string|max:50|unique:kelas,nama_kelas,' . $kelas->id,
             'tingkat' => 'required|integer|min:1|max:6',
             'guru_id' => 'required|exists:gurus,id',
-            'jumlah_siswa' => 'required|integer|min:0',
             'tahun_pelajaran' => 'required|string',
         ]);
 
@@ -460,7 +475,6 @@ class DashboardController extends Controller
             'nama_kelas' => $request->nama_kelas,
             'tingkat' => $request->tingkat,
             'guru_id' => $request->guru_id,
-            'jumlah_siswa' => $request->jumlah_siswa,
             'tahun_pelajaran' => $request->tahun_pelajaran,
         ]);
 

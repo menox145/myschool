@@ -160,6 +160,48 @@ class NilaiHarianController extends Controller
         $subBab->delete();
         return response()->json(['success' => true]);
     }
+    public function audit(Request $request)
+    {
+        $tahunAktif = TahunPelajaran::where('aktif', true)->first();
+
+        if (!$tahunAktif) {
+            return redirect()->route('dashboard')->with('error', 'Belum ada Tahun Pelajaran yang aktif.');
+        }
+
+        $kelas = Kelas::orderBy('nama_kelas')->get();
+        $kelasSelected = $request->kelas_id;
+        $mapelSelected = $request->kelas_mapel_id;
+
+        $siswa = collect();
+        $auditData = collect();
+
+        if ($kelasSelected) {
+            $siswa = Siswa::whereHas('riwayatKelas', function ($q) use ($kelasSelected, $tahunAktif) {
+                $q->where('kelas_id', $kelasSelected)
+                    ->where('tahun_pelajaran_id', $tahunAktif->id)
+                    ->where('status', 'aktif');
+            })->orderBy('nama')->get();
+
+            $query = NilaiHarian::with(['siswa', 'user', 'subBab.bab', 'kelasMapel.mapel'])
+                ->where('tahun_pelajaran_id', $tahunAktif->id);
+
+            if ($mapelSelected) {
+                $query->where('kelas_mapel_id', $mapelSelected);
+            }
+
+            $auditData = $query->orderBy('updated_at', 'desc')->get();
+        }
+
+        return view('dashboard.nilai-audit', compact(
+            'kelas',
+            'siswa',
+            'auditData',
+            'kelasSelected',
+            'mapelSelected',
+            'tahunAktif'
+        ));
+    }
+
     public function export(Request $request)
     {
         $tahunAktif = TahunPelajaran::where('aktif', true)->first();

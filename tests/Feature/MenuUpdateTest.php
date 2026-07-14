@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Guru;
+use App\Models\GuruPiket;
 use App\Models\Kelas;
 use App\Models\KelasMapel;
 use App\Models\MataPelajaran;
@@ -25,6 +26,78 @@ class MenuUpdateTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create(['role' => 'admin']);
+    }
+
+    public function test_kelas_creation_does_not_require_jumlah_siswa(): void
+    {
+        $guru = Guru::create([
+            'nip' => '9999999999',
+            'nama' => 'Guru Baru',
+        ]);
+        TahunPelajaran::create([
+            'tahun' => '2026/2027',
+            'semester' => 'Ganjil',
+            'aktif' => true,
+        ]);
+
+        $response = $this->actingAs($this->admin)->post(route('kelas.store'), [
+            'nama_kelas' => 'X A',
+            'tingkat' => 1,
+            'guru_id' => $guru->id,
+            'tahun_pelajaran' => '2026/2027 - Ganjil',
+        ]);
+
+        $response->assertRedirect(route('kelas'));
+        $this->assertDatabaseHas('kelas', [
+            'nama_kelas' => 'X A',
+            'guru_id' => $guru->id,
+        ]);
+    }
+
+    public function test_dashboard_shows_real_time_statistics_and_piket_schedule(): void
+    {
+        $guruPiket = Guru::create(['nip' => '1111111111', 'nama' => 'Guru Piket 1']);
+        Guru::create(['nip' => '2222222222', 'nama' => 'Guru Piket 2']);
+        Kelas::create([
+            'nama_kelas' => 'IX A',
+            'tingkat' => 9,
+            'guru_id' => 1,
+            'jumlah_siswa' => 0,
+            'tahun_pelajaran' => '2026/2027 - Ganjil',
+            'user_id' => $this->admin->id,
+            'nama_penambah' => $this->admin->name,
+        ]);
+        MataPelajaran::create([
+            'kode_mapel' => 'PJK',
+            'nama_mapel' => 'Pendidikan Jasmani',
+            'kkm' => 75,
+            'kelompok' => 'A',
+            'jenis_rapot' => 'akademik',
+        ]);
+        Siswa::create([
+            'nis' => '9001',
+            'nisn' => '9000000001',
+            'nama' => 'Siswa Test',
+            'jenis_kelamin' => 'L',
+            'tgl_lahir' => '2010-01-01',
+            'status' => 'Aktif',
+            'user_id' => $this->admin->id,
+            'nama_penambah' => $this->admin->name,
+        ]);
+        GuruPiket::create([
+            'hari' => 'Senin',
+            'guru_id' => $guruPiket->id,
+            'urutan' => 1,
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('dashboard'));
+
+        $response->assertOk();
+        $response->assertSee('Jadwal Guru Piket');
+        $response->assertSee('Senin');
+        $response->assertSee('Total Siswa');
+        $response->assertSee((string) Siswa::count());
+        $response->assertSee('Guru Piket 1');
     }
 
     public function test_admin_can_update_siswa(): void
@@ -109,7 +182,6 @@ class MenuUpdateTest extends TestCase
             'nama_kelas' => 'II A',
             'tingkat' => 2,
             'guru_id' => $guru->id,
-            'jumlah_siswa' => 12,
             'tahun_pelajaran' => '2025/2026 - Ganjil',
         ]);
 
@@ -118,7 +190,6 @@ class MenuUpdateTest extends TestCase
             'id' => $kelas->id,
             'nama_kelas' => 'II A',
             'tingkat' => 2,
-            'jumlah_siswa' => 12,
         ]);
     }
 
@@ -560,6 +631,19 @@ class MenuUpdateTest extends TestCase
             'id' => $kelas->id,
             'jumlah_siswa' => 1,
         ]);
+    }
+
+    public function test_admin_can_access_nilai_audit_route(): void
+    {
+        TahunPelajaran::create([
+            'tahun' => '2025/2026',
+            'semester' => 'Ganjil',
+            'aktif' => true,
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('nilai.audit'));
+
+        $response->assertStatus(200);
     }
 
     public function test_admin_can_move_student_to_another_class_in_same_year(): void

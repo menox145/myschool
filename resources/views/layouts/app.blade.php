@@ -153,7 +153,8 @@
                                 class="sidebar-chevron fas fa-chevron-down text-[10px] transition-transform @if ($akademikOpen) rotate-180 @endif"></i>
                         </button>
 
-                        <div id="submenu-akademik" class="sidebar-submenu mt-1 @if (!$akademikOpen) hidden @endif">
+                        <div id="submenu-akademik"
+                            class="sidebar-submenu mt-1 @if (!$akademikOpen) hidden @endif">
                             <a href="{{ route('nilai.harian') }}" title="Nilai Harian"
                                 class="sidebar-link flex items-center px-6 py-2.5 text-sm @if (request()->routeIs('nilai.harian*')) active @endif">
                                 <i class="fas fa-edit mr-3 w-5 text-center"></i>
@@ -211,7 +212,8 @@
                                 class="sidebar-chevron fas fa-chevron-down text-[10px] transition-transform @if ($masterOpen) rotate-180 @endif"></i>
                         </button>
 
-                        <div id="submenu-master" class="sidebar-submenu mt-1 @if (!$masterOpen) hidden @endif">
+                        <div id="submenu-master"
+                            class="sidebar-submenu mt-1 @if (!$masterOpen) hidden @endif">
                             <a href="{{ route('tahun-pelajaran.index') }}" title="Tahun Pelajaran"
                                 class="sidebar-link flex items-center px-6 py-2.5 text-sm @if (request()->routeIs('tahun-pelajaran.*')) active @endif">
                                 <i class="fas fa-calendar mr-3 w-5 text-center"></i>
@@ -246,6 +248,12 @@
                                 class="sidebar-link flex items-center px-6 py-2.5 text-sm @if (request()->routeIs('kelas-mapel.*')) active @endif">
                                 <i class="fas fa-link mr-3 w-5 text-center"></i>
                                 <span class="sidebar-label">Kelompok Belajar</span>
+                            </a>
+
+                            <a href="{{ route('guru-piket.index') }}" title="Jadwal Piket"
+                                class="sidebar-link flex items-center px-6 py-2.5 text-sm @if (request()->routeIs('guru-piket.*')) active @endif">
+                                <i class="fas fa-clock mr-3 w-5 text-center"></i>
+                                <span class="sidebar-label">Jadwal Piket</span>
                             </a>
                         </div>
                     </div>

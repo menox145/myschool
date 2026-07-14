@@ -10,6 +10,7 @@ use App\Http\Controllers\KelasMapelController;
 use App\Http\Controllers\RapotController;
 use App\Http\Controllers\NilaiHarianController;
 use App\Http\Controllers\KenaikanKelasController;
+use App\Http\Controllers\AbsenController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -58,6 +59,11 @@ Route::middleware('auth')->group(function () {
             Route::get('/cetak/{siswa_id}/{tahun_pelajaran_id}/{jenis_rapot}', [RapotController::class, 'cetak'])->name('cetak.print');
             Route::get('/cetak-kelas/{tahun_pelajaran_id}/{kelas_id}/{jenis_rapot}', [RapotController::class, 'cetakKelas'])->name('cetak.kelas');
         });
+
+        // Absen Siswa
+        Route::get('absen', [AbsenController::class, 'index'])->name('absen.index');
+        Route::post('absen', [AbsenController::class, 'store'])->name('absen.store');
+        Route::get('absen/cetak/pdf', [AbsenController::class, 'cetak'])->name('absen.cetak.print');
     });
     // Riwayat Siswa: admin + guru dapat lihat perkembangan dari tahun ke tahun
     Route::get('siswa/riwayat', [DashboardController::class, 'riwayatIndex'])->name('siswa.riwayat.index');

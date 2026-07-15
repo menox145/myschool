@@ -21,8 +21,6 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('throttle:5,1');
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 });
 
 // Auth routes
@@ -117,5 +115,7 @@ Route::middleware('auth')->group(function () {
 
         // Master Jadwal Piket
         Route::resource('guru-piket', GuruPiketController::class)->except(['create', 'show', 'edit']);
+        Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+        Route::post('/register', [AuthController::class, 'register'])->name('register.post');
     });
 });

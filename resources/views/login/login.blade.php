@@ -33,10 +33,10 @@
                 class="flex-1 py-2.5 px-4 rounded-lg font-medium text-sm bg-white text-gray-800 shadow-sm text-center">
                 <i class="fas fa-sign-in-alt mr-2"></i>Login
             </a>
-            <a href="{{ route('register') }}"
+            {{-- <a href="{{ route('register') }}"
                 class="flex-1 py-2.5 px-4 rounded-lg font-medium text-sm text-gray-500 text-center hover:text-gray-700">
                 <i class="fas fa-user-plus mr-2"></i>Register
-            </a>
+            </a> --}}
         </div>
 
         <!-- Login Form -->

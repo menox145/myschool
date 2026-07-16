@@ -65,24 +65,54 @@
             samping.</p>
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm p-6">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-gray-800">Jadwal Guru Piket</h3>
-            <span class="text-sm text-gray-500">Senin - Jumat</span>
+    <div class="bg-linear-to-br from-slate-50 via-white to-blue-50 rounded-2xl border border-slate-200 shadow-sm p-6">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-5">
+            <div class="flex items-center gap-3">
+                <div class="rounded-xl bg-blue-100 p-2.5 text-blue-600">
+                    <i class="fas fa-calendar-check text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800">Jadwal Guru Piket</h3>
+                    <p class="text-sm text-gray-500">Daftar penanggung jawab piket setiap hari</p>
+                </div>
+            </div>
+            <div
+                class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">
+                <i class="fas fa-clock text-xs"></i>
+                Senin - Jumat
+            </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
             @forelse ($piket as $hari => $items)
-                <div class="border rounded-lg p-4 bg-gray-50">
-                    <p class="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b">{{ $hari }}</p>
+                <div
+                    class="group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-300">
+                    <div class="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-blue-500 to-indigo-500"></div>
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="text-sm font-semibold text-slate-700">{{ $hari }}</p>
+                        <span class="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-600">
+                            {{ count($items) }} orang
+                        </span>
+                    </div>
                     <div class="space-y-2">
                         @foreach ($items as $item)
-                            <p class="text-sm text-gray-600">{{ $item->guru->nama ?? 'Belum ada guru' }}</p>
+                            <div class="flex items-start gap-2 rounded-lg bg-slate-50 px-3 py-2">
+                                <div class="mt-0.5 rounded-full bg-blue-100 p-1">
+                                    <i class="fas fa-user-shield text-[10px] text-blue-600"></i>
+                                </div>
+                                <p class="text-sm text-slate-600">{{ $item->guru->nama ?? 'Belum ada guru' }}</p>
+                            </div>
                         @endforeach
                     </div>
                 </div>
             @empty
-                <div class="col-span-5 text-center text-gray-500 py-4">
-                    Belum ada jadwal piket.
+                <div class="md:col-span-5 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+                    <div
+                        class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                        <i class="fas fa-calendar-times"></i>
+                    </div>
+                    <p class="font-semibold text-slate-700">Belum ada jadwal piket.</p>
+                    <p class="mt-1 text-sm text-slate-500">Jadwal akan muncul di sini setelah ditambahkan.</p>
                 </div>
             @endforelse
         </div>

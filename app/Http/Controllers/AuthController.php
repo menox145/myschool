@@ -34,9 +34,8 @@ class AuthController extends Controller
     // METHOD BARU UNTUK REGISTER
     public function showRegister()
     {
-        if (Auth::check()) {
-            return redirect()->route('dashboard');
-        }
+        // Route for registration is protected by 'admin' middleware in routes/web.php,
+        // so authenticated admin users should be able to access the register form.
         return view('login.register');
     }
 

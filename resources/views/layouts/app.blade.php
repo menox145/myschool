@@ -255,6 +255,13 @@
                                 <i class="fas fa-clock mr-3 w-5 text-center"></i>
                                 <span class="sidebar-label">Jadwal Piket</span>
                             </a>
+                            @if (Route::has('register'))
+                                <a href="{{ route('register') }}" title="Registrasi Pengguna"
+                                    class="sidebar-link flex items-center px-6 py-2.5 text-sm @if (request()->routeIs('register')) active @endif">
+                                    <i class="fas fa-user-plus mr-3 w-5 text-center"></i>
+                                    <span class="sidebar-label">Registrasi</span>
+                                </a>
+                            @endif
                         </div>
                     </div>
                 @endif

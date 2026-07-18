@@ -63,6 +63,8 @@ class RapotController extends Controller
 
         $rata_rata = $nilai->whereNotNull('hpa')->avg('hpa');
         $rata_rata = $rata_rata ? round($rata_rata, 2) : '-';
+        $total_nilai = $nilai->whereNotNull('hpa')->sum('hpa');
+        $total_nilai = $total_nilai ? round($total_nilai, 2) : '-';
 
         $view = match ($jenis_rapot) {
             'akademik' => 'rapot.cetak-akademik',
@@ -72,7 +74,7 @@ class RapotController extends Controller
         };
 
         // Kirim $riwayat ke view, bukan $siswa->kelas
-        return view($view, compact('siswa', 'tahun', 'jenis_rapot', 'nilai', 'rata_rata', 'riwayat'));
+        return view($view, compact('siswa', 'tahun', 'jenis_rapot', 'nilai', 'rata_rata', 'riwayat', 'total_nilai'));
     }
 
     public function cetakKelas($tahun_pelajaran_id, $kelas_id, $jenis_rapot)
@@ -107,6 +109,7 @@ class RapotController extends Controller
                 'siswa' => $siswa,
                 'nilai' => $nilai,
                 'rata_rata' => $nilai->whereNotNull('hpa')->avg('hpa') ? round($nilai->avg('hpa'), 2) : '-',
+                'total_nilai' => $nilai->whereNotNull('hpa')->sum('hpa') ? round($nilai->sum('hpa'), 2) : '-',
             ];
         }
 

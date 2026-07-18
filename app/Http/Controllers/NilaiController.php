@@ -91,7 +91,8 @@ class NilaiController extends Controller
                     ->where('tahun_pelajaran_id', $request->tahun_pelajaran_id)
                     ->first();
 
-                $rph = $nilaiLama->rph ?? $nilaiLama->rata_uh ?? 0; // Ambil dari UH
+                $rph = $nilaiLama->rph ?? 0; // Ambil dari RPH
+                $ruh = $nilaiLama->rata_uh ?? 0; // Ambil dari UH
                 $pts = $data['pts'] ?? $nilaiLama->pts ?? 0;
                 $pas = $data['pas'] ?? $nilaiLama->pas ?? 0;
 
@@ -100,8 +101,8 @@ class NilaiController extends Controller
 
                 // Hitung Nilai Akhir Kurmer: (2*RPH + PTS + PAS) / 4
                 $hpa = null;
-                if ($rph > 0 || $pts > 0 || $pas > 0) {
-                    $hpa = round((2 * $rph + $pts + $pas) / 4, 2);
+                if ($ruh > 0 || $rph > 0 || $pts > 0 || $pas > 0) {
+                    $hpa = round(($ruh + $rph + $pts + $pas) / 4, 2);
                 }
 
                 $pre = $hpa ? $this->hitungPredikat($hpa) : null;

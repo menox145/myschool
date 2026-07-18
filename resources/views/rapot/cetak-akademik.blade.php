@@ -146,17 +146,12 @@
         <table class="nilai">
             <thead>
                 <tr>
-                    <th rowspan="2" width="30px">No</th>
-                    <th rowspan="2">Mata Pelajaran</th>
-                    <th rowspan="2" width="50px">KKM</th>
-                    <th colspan="4">Nilai</th>
-                    <th rowspan="2" width="60px">Predikat</th>
-                </tr>
-                <tr>
-                    <th width="50px">RPH</th>
-                    <th width="50px">PTS</th>
-                    <th width="50px">PAS</th>
-                    <th width="60px">Akhir</th>
+                    <th width="30px">No</th>
+                    <th>Mata Pelajaran</th>
+                    <th width="70px">KKM</th>
+                    <th width="70px">Nilai</th>
+                    <th width="150px">Terbilang</th>
+                    <th width="60px">Predikat</th>
                 </tr>
             </thead>
             <tbody>
@@ -166,17 +161,18 @@
                         <td class="text-center">{{ $no++ }}</td>
                         <td>{{ $n->mapel_nama }}</td>
                         <td class="text-center">{{ $n->kkm ?? 75 }}</td>
-                        <td class="text-center">{{ $n->rph ?: '-' }}</td>
-                        <td class="text-center">{{ $n->pts ?: '-' }}</td>
-                        <td class="text-center">{{ $n->pas ?: '-' }}</td>
                         <td class="text-center"><b>{{ $n->hpa ?: '-' }}</b></td>
+                        <td class="text-center">{{ \App\Helpers\NumberHelper::terbilang($n->hpa) }}</td>
                         <td class="text-center">{{ $n->predikat ?: '-' }}</td>
                     </tr>
                 @endforeach
                 <tr>
-                    <td colspan="6" class="text-center"><b>Rata-rata</b></td>
-                    <td class="text-center"><b>{{ $rata_rata ?? 0 }}</b></td>
-                    <td></td>
+                    <td colspan="2" class="text-center"><b>Total Nilai</b></td>
+                    <td colspan="4" class="text-center"><b>{{ $total_nilai ?? 0 }}</b></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center"><b>Rata-rata</b></td>
+                    <td colspan="4" class="text-center"><b>{{ $rata_rata ?? 0 }}</b></td>
                 </tr>
             </tbody>
         </table>

@@ -3,7 +3,7 @@
     <table>
         <tr>
             <td class="logo">
-                <img src="{{ asset('img/logo.png') }}" alt="Logo">
+                <img src="{{ asset('logo.png') }}" alt="Logo">
             </td>
             <td class="text">
                 <h3>YAYASAN TAZKIYATUN NUFUS LITTAWWABIN</h3>

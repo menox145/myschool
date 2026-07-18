@@ -42,8 +42,8 @@
         <!-- Login Form -->
         <div class="auth-card bg-white rounded-2xl p-8">
             <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-                    <i class="fas fa-lock text-2xl text-blue-600"></i>
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-blue-100 rounded-full overflow-hidden mb-4">
+                    <img src="{{ asset('logo.jpeg') }}" alt="Logo" class="w-100 h-100 object-contain">
                 </div>
                 <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome Back</h2>
                 <p class="text-gray-500 text-sm">Please sign in to your account</p>
@@ -115,10 +115,7 @@
                 </button>
 
                 <div class="text-center mt-6 text-sm text-gray-500">
-                    Don't have an account?
-                    <a href="{{ route('register') }}" class="text-blue-600 hover:text-blue-700 font-medium">
-                        Register
-                    </a>
+                    If you don't have an account, please contact the administrator.
                 </div>
             </form>
         </div>

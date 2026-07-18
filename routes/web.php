@@ -116,7 +116,7 @@ Route::middleware('auth')->group(function () {
         // Master Jadwal Piket
         Route::resource('guru-piket', GuruPiketController::class)->except(['create', 'show', 'edit']);
         // Registrasi hanya untuk admin (akses dari sidebar)
-        Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-        Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+        // Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+        // Route::post('/register', [AuthController::class, 'register'])->name('register.post');
     });
 });

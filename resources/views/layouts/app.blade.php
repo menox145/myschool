@@ -122,7 +122,8 @@
             request()->routeIs('kelas') ||
             request()->routeIs('siswa') ||
             request()->routeIs('mapel.*') ||
-            request()->routeIs('kelas-mapel.*');
+            request()->routeIs('kelas-mapel.*') ||
+            request()->routeIs('users.*');
     @endphp
 
     <div id="appShell" class="flex h-screen overflow-hidden">
@@ -262,6 +263,12 @@
                                 class="sidebar-link flex items-center px-6 py-2.5 text-sm @if (request()->routeIs('guru-piket.*')) active @endif">
                                 <i class="fas fa-clock mr-3 w-5 text-center"></i>
                                 <span class="sidebar-label">Jadwal Piket</span>
+                            </a>
+
+                            <a href="{{ route('users.index') }}" title="Manajemen Pengguna"
+                                class="sidebar-link flex items-center px-6 py-2.5 text-sm @if (request()->routeIs('users.*')) active @endif">
+                                <i class="fas fa-users-cog mr-3 w-5 text-center"></i>
+                                <span class="sidebar-label">Manajemen Pengguna</span>
                             </a>
                             @if (Route::has('register'))
                                 <a href="{{ route('register') }}" title="Registrasi Pengguna"

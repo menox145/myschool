@@ -12,6 +12,7 @@ use App\Http\Controllers\NilaiHarianController;
 use App\Http\Controllers\KenaikanKelasController;
 use App\Http\Controllers\AbsenController;
 use App\Http\Controllers\GuruPiketController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -102,6 +103,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('kelas-mapel', KelasMapelController::class)->except(['show', 'create', 'edit']);
         Route::post('kelas-mapel/{id}/set-uh', [KelasMapelController::class, 'setJumlahUh'])->name('kelas-mapel.set-uh');
 
+        // User Management
+        Route::resource('users', UserController::class)->except(['show', 'create', 'edit']);
+
         // Resource Nilai - taro paling bawah biar nggak nabrak route spesifik di atas
         Route::resource('nilai', NilaiController::class)->except(['index', 'store']);
     });
@@ -116,7 +120,7 @@ Route::middleware('auth')->group(function () {
         // Master Jadwal Piket
         Route::resource('guru-piket', GuruPiketController::class)->except(['create', 'show', 'edit']);
         // Registrasi hanya untuk admin (akses dari sidebar)
-        Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-        Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+        // Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+        // Route::post('/register', [AuthController::class, 'register'])->name('register.post');
     });
 });

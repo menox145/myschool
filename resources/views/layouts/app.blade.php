@@ -7,6 +7,13 @@
     <title>@yield('title', 'Dashboard') - MySchool</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    {{-- Favicon --}}
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('favicon/site.webmanifest') }}">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap');
 
@@ -115,7 +122,8 @@
             request()->routeIs('kelas') ||
             request()->routeIs('siswa') ||
             request()->routeIs('mapel.*') ||
-            request()->routeIs('kelas-mapel.*');
+            request()->routeIs('kelas-mapel.*') ||
+            request()->routeIs('users.*');
     @endphp
 
     <div id="appShell" class="flex h-screen overflow-hidden">
@@ -125,10 +133,11 @@
             class="sidebar-shell bg-gradient-to-b from-blue-900 to-blue-950 text-white flex-shrink-0 shadow-xl">
             <div class="sidebar-brand h-16 px-4 flex items-center justify-between border-b border-white/10">
                 <a href="{{ route('dashboard') }}" class="flex items-center min-w-0">
-                    <span class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-school text-xl"></i>
+                    <span class="w-10 h-10 rounded-lg overflow-hidden bg-white/10 flex items-center justify-center flex-shrink-0">
+                        {{-- <i class="fas fa-school text-xl"></i> --}}
+                        <img src="{{ asset('logo.jpeg') }}" alt="Logo" class="w-full h-full object-cover">
                     </span>
-                    <span class="sidebar-label ml-3 text-xl font-bold truncate">MySchool</span>
+                    <span class="sidebar-label ml-3 text-xl font-bold truncate">{{ config('app.name') }}</span>
                 </a>
                 <button type="button" id="closeSidebarMobile"
                     class="md:hidden w-9 h-9 rounded hover:bg-white/10 flex items-center justify-center">
@@ -254,6 +263,12 @@
                                 class="sidebar-link flex items-center px-6 py-2.5 text-sm @if (request()->routeIs('guru-piket.*')) active @endif">
                                 <i class="fas fa-clock mr-3 w-5 text-center"></i>
                                 <span class="sidebar-label">Jadwal Piket</span>
+                            </a>
+
+                            <a href="{{ route('users.index') }}" title="Manajemen Pengguna"
+                                class="sidebar-link flex items-center px-6 py-2.5 text-sm @if (request()->routeIs('users.*')) active @endif">
+                                <i class="fas fa-users-cog mr-3 w-5 text-center"></i>
+                                <span class="sidebar-label">Manajemen Pengguna</span>
                             </a>
                             @if (Route::has('register'))
                                 <a href="{{ route('register') }}" title="Registrasi Pengguna"
